@@ -35,14 +35,14 @@
 
 <nav
   class="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
-  class:bg-gray-900={isScrolled}
+  class:bg-black={isScrolled}
   class:backdrop-blur={isScrolled}
 >
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <a href="/" class="flex items-center gap-2">
-        <span class="text-2xl font-bold text-primary-400">Streamium</span>
+        <span class="text-2xl font-bold text-white">Streamurthine</span>
       </a>
 
       <!-- Desktop Navigation -->
@@ -51,7 +51,7 @@
           {#if !item.requiresAuth || $authStore.isAuthenticated}
             <a
               href={item.href}
-              class="text-gray-300 hover:text-white transition-colors"
+              class="text-gray-200 hover:text-white transition-colors"
               class:text-primary-400={$page.url.pathname === item.href}
             >
               {item.label}
@@ -124,7 +124,7 @@
             </a>
             <a
               href="/register"
-              class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              class="px-4 py-2 bg-[#8B008B] text-white rounded-lg hover:bg-[#6A006A]"
             >
               Register
             </a>
