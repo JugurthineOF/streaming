@@ -24,7 +24,6 @@ export const providers: Provider[] = [
       if (type === "movie") {
         return `${urls.vidsrc}/movie/${mediaId}?autoPlay=true`;
       } else {
-
         if (typeof season !== "undefined" && typeof episode !== "undefined") {
           return `${urls.vidsrc}/tv/${mediaId}/${season}/${episode}?autoPlay=true&autoNext=true`;
         }
@@ -42,7 +41,6 @@ export const providers: Provider[] = [
       if (type === "movie") {
         return `${urls.vidsrcpro}/movie/${mediaId}`;
       } else {
-
         if (typeof season !== "undefined" && typeof episode !== "undefined") {
           return `${urls.vidsrcpro}/tv/${mediaId}/${season}/${episode}`;
         }
@@ -60,11 +58,28 @@ export const providers: Provider[] = [
       if (type === "movie") {
         return `${urls.embedsu}/movie/${mediaId}`;
       } else {
-
         if (typeof season !== "undefined" && typeof episode !== "undefined") {
           return `${urls.embedsu}/tv/${mediaId}/${season}/${episode}`;
         }
         return `${urls.embedsu}/tv/${mediaId}`;
+      }
+    },
+  },
+  {
+    id: "filemoon",
+    name: "FileMoon",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+
+      // Adjust path pattern if your FileMoon embed link differs
+      if (type === "movie") {
+        return `${urls.filemoon}/e/${mediaId}`;
+      } else {
+        if (typeof season !== "undefined" && typeof episode !== "undefined") {
+          return `${urls.filemoon}/e/${mediaId}-${season}-${episode}`;
+        }
+        return `${urls.filemoon}/e/${mediaId}`;
       }
     },
   },
