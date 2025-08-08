@@ -15,3 +15,10 @@ export const providerUrls = writable({
   animepahe: "https://animepahe.ru",
   nineanime: "https://9anime.id"
 });
+
+export async function loadProviderUrls() {
+  // If you later want to load these from an API, do it here.
+  // For now, we just keep the defaults above.
+  // This keeps the function export so +layout.svelte doesn't break.
+  return;
+}
