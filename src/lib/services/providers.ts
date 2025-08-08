@@ -7,9 +7,9 @@ export interface Provider {
   name: string;
   getEmbedUrl: (
     mediaId: string | number,
-    type: "movie" | "tv",
+    type: "movie" | "tv" | "anime",
     season?: number,
-    episode?: number,
+    episode?: number
   ) => string;
 }
 
@@ -20,17 +20,10 @@ export const providers: Provider[] = [
     getEmbedUrl: (mediaId, type, season, episode) => {
       const urls = get(providerUrls);
       if (!urls) return "";
-
-      if (type === "movie") {
-        return `${urls.vidsrc}/movie/${mediaId}?autoPlay=true`;
-      } else {
-
-        if (typeof season !== "undefined" && typeof episode !== "undefined") {
-          return `${urls.vidsrc}/tv/${mediaId}/${season}/${episode}?autoPlay=true&autoNext=true`;
-        }
-        return `${urls.vidsrc}/tv/${mediaId}?autoPlay=true`;
-      }
-    },
+      if (type === "movie") return `${urls.vidsrc}/movie/${mediaId}?autoPlay=true`;
+      if (season && episode) return `${urls.vidsrc}/tv/${mediaId}/${season}/${episode}?autoPlay=true&autoNext=true`;
+      return `${urls.vidsrc}/tv/${mediaId}?autoPlay=true`;
+    }
   },
   {
     id: "vidsrcpro",
@@ -38,17 +31,10 @@ export const providers: Provider[] = [
     getEmbedUrl: (mediaId, type, season, episode) => {
       const urls = get(providerUrls);
       if (!urls) return "";
-
-      if (type === "movie") {
-        return `${urls.vidsrcpro}/movie/${mediaId}`;
-      } else {
-
-        if (typeof season !== "undefined" && typeof episode !== "undefined") {
-          return `${urls.vidsrcpro}/tv/${mediaId}/${season}/${episode}`;
-        }
-        return `${urls.vidsrcpro}/tv/${mediaId}`;
-      }
-    },
+      if (type === "movie") return `${urls.vidsrcpro}/movie/${mediaId}`;
+      if (season && episode) return `${urls.vidsrcpro}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.vidsrcpro}/tv/${mediaId}`;
+    }
   },
   {
     id: "embedsu",
@@ -56,18 +42,93 @@ export const providers: Provider[] = [
     getEmbedUrl: (mediaId, type, season, episode) => {
       const urls = get(providerUrls);
       if (!urls) return "";
-
-      if (type === "movie") {
-        return `${urls.embedsu}/movie/${mediaId}`;
-      } else {
-
-        if (typeof season !== "undefined" && typeof episode !== "undefined") {
-          return `${urls.embedsu}/tv/${mediaId}/${season}/${episode}`;
-        }
-        return `${urls.embedsu}/tv/${mediaId}`;
-      }
-    },
+      if (type === "movie") return `${urls.embedsu}/movie/${mediaId}`;
+      if (season && episode) return `${urls.embedsu}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.embedsu}/tv/${mediaId}`;
+    }
   },
+  {
+    id: "smashystream",
+    name: "SmashyStream",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return `${urls.smashystream}/movie/${mediaId}`;
+      if (season && episode) return `${urls.smashystream}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.smashystream}/tv/${mediaId}`;
+    }
+  },
+  {
+    id: "movieapi",
+    name: "MovieAPI",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return `${urls.movieapi}/movie/${mediaId}`;
+      if (season && episode) return `${urls.movieapi}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.movieapi}/tv/${mediaId}`;
+    }
+  },
+  {
+    id: "upcloud",
+    name: "UpCloud",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return `${urls.upcloud}/movie/${mediaId}`;
+      if (season && episode) return `${urls.upcloud}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.upcloud}/tv/${mediaId}`;
+    }
+  },
+  {
+    id: "multiembed",
+    name: "MultiEmbed",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return `${urls.multiembed}/movie/${mediaId}`;
+      if (season && episode) return `${urls.multiembed}/tv/${mediaId}/${season}/${episode}`;
+      return `${urls.multiembed}/tv/${mediaId}`;
+    }
+  },
+
+  // Anime providers
+  {
+    id: "gogoanime",
+    name: "Gogoanime",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return `${urls.gogoanime}/streaming.php?id=${mediaId}`;
+    }
+  },
+  {
+    id: "zoro",
+    name: "Zoro",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return `${urls.zoro}/watch/${mediaId}`;
+    }
+  },
+  {
+    id: "animepahe",
+    name: "Animepahe",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return `${urls.animepahe}/play/${mediaId}`;
+    }
+  },
+  {
+    id: "nineanime",
+    name: "9Anime",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return `${urls.nineanime}/watch/${mediaId}`;
+    }
+  }
 ];
 
 export function getProvider(id: string): Provider | undefined {
@@ -75,15 +136,11 @@ export function getProvider(id: string): Provider | undefined {
 }
 
 export function getDefaultProvider(): Provider {
-  if (!browser) {
-    return providers[0];
-  }
-
+  if (!browser) return providers[0];
   const savedProvider = localStorage.getItem("selectedProvider");
   if (savedProvider) {
     const provider = providers.find((p) => p.id === savedProvider);
     if (provider) return provider;
   }
-
   return providers.find((p) => p.id === "vidsrc") || providers[0];
 }
