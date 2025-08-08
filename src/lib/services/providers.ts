@@ -20,7 +20,8 @@ export const providers: Provider[] = [
     id: "vidsrc",
     name: "VidSrc",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.vidsrc}/movie/${mediaId}?autoPlay=true`);
       if (season && episode) return prox(`${urls.vidsrc}/tv/${mediaId}/${season}/${episode}?autoPlay=true&autoNext=true`);
       return prox(`${urls.vidsrc}/tv/${mediaId}?autoPlay=true`);
@@ -30,7 +31,8 @@ export const providers: Provider[] = [
     id: "vidsrcpro",
     name: "VidSrc Pro",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.vidsrcpro}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.vidsrcpro}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.vidsrcpro}/tv/${mediaId}`);
@@ -40,7 +42,8 @@ export const providers: Provider[] = [
     id: "embedsu",
     name: "Embed.su",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.embedsu}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.embedsu}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.embedsu}/tv/${mediaId}`);
@@ -50,7 +53,8 @@ export const providers: Provider[] = [
     id: "smashystream",
     name: "SmashyStream",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.smashystream}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.smashystream}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.smashystream}/tv/${mediaId}`);
@@ -60,7 +64,8 @@ export const providers: Provider[] = [
     id: "movieapi",
     name: "MovieAPI",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.movieapi}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.movieapi}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.movieapi}/tv/${mediaId}`);
@@ -70,7 +75,8 @@ export const providers: Provider[] = [
     id: "upcloud",
     name: "UpCloud",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.upcloud}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.upcloud}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.upcloud}/tv/${mediaId}`);
@@ -80,7 +86,8 @@ export const providers: Provider[] = [
     id: "multiembed",
     name: "MultiEmbed",
     getEmbedUrl: (mediaId, type, season, episode) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       if (type === "movie") return prox(`${urls.multiembed}/movie/${mediaId}`);
       if (season && episode) return prox(`${urls.multiembed}/tv/${mediaId}/${season}/${episode}`);
       return prox(`${urls.multiembed}/tv/${mediaId}`);
@@ -92,7 +99,8 @@ export const providers: Provider[] = [
     id: "gogoanime",
     name: "Gogoanime",
     getEmbedUrl: (mediaId) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       return prox(`${urls.gogoanime}/streaming.php?id=${mediaId}`);
     }
   },
@@ -100,7 +108,8 @@ export const providers: Provider[] = [
     id: "zoro",
     name: "Zoro",
     getEmbedUrl: (mediaId) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       return prox(`${urls.zoro}/watch/${mediaId}`);
     }
   },
@@ -108,7 +117,8 @@ export const providers: Provider[] = [
     id: "animepahe",
     name: "Animepahe",
     getEmbedUrl: (mediaId) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       return prox(`${urls.animepahe}/play/${mediaId}`);
     }
   },
@@ -116,7 +126,8 @@ export const providers: Provider[] = [
     id: "nineanime",
     name: "9Anime",
     getEmbedUrl: (mediaId) => {
-      const urls = get(providerUrls); if (!urls) return "";
+      const urls = get(providerUrls);
+      if (!urls) return "";
       return prox(`${urls.nineanime}/watch/${mediaId}`);
     }
   }
@@ -128,10 +139,10 @@ export function getProvider(id: string): Provider | undefined {
 
 export function getDefaultProvider(): Provider {
   if (!browser) return providers[0];
-  const saved = localStorage.getItem("selectedProvider");
-  if (saved) {
-    const p = providers.find((x) => x.id === saved);
-    if (p) return p;
+  const savedProvider = localStorage.getItem("selectedProvider");
+  if (savedProvider) {
+    const provider = providers.find((p) => p.id === savedProvider);
+    if (provider) return provider;
   }
   return providers.find((p) => p.id === "vidsrc") || providers[0];
 }
