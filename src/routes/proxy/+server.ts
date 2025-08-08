@@ -13,20 +13,28 @@ function strip(hdrs: Headers) {
   h.set('access-control-expose-headers', '*');
   return h;
 }
+
 const prox = (u: string) => `/proxy?u=${encodeURIComponent(u)}`;
 
 function rewriteHtml(html: string, base: URL) {
+  // remove CSP meta tags that block iframe embedding
+  html = html.replace(/<meta[^>]+http-equiv=["']content-security-policy["'][^>]*>/gi, '');
+
+  // rewrite src/href double quotes
   html = html.replace(/(src|href)\s*=\s*"(.*?)"/gi, (_m, a, v) => {
     try { return `${a}="${prox(new URL(v, base).toString())}"`; } catch { return `${a}="${v}"`; }
   });
+  // rewrite src/href single quotes
   html = html.replace(/(src|href)\s*=\s*'(.*?)'/gi, (_m, a, v) => {
     try { return `${a}='${prox(new URL(v, base).toString())}'`; } catch { return `${a}='${v}'`; }
   });
+  // rewrite url(...) in inline styles
   html = html.replace(/url\((?!data:)(['"]?)(.*?)\1\)/gi, (_m, _q, v) => {
     try { return `url(${prox(new URL(v, base).toString())})`; } catch { return `url(${v})`; }
   });
   return html;
 }
+
 function rewriteM3U8(text: string, base: URL) {
   return text.split('\n').map((line) => {
     const s = line.trim();
@@ -40,7 +48,7 @@ export const GET: RequestHandler = async ({ url, fetch, request }) => {
   if (!target) return new Response('Missing u', { status: 400 });
 
   const t = new URL(target);
-  const hdrs: Record<string,string> = {
+  const hdrs: Record<string, string> = {
     'user-agent': UA,
     'accept': request.headers.get('accept') ?? '*/*',
     'accept-language': request.headers.get('accept-language') ?? 'en-US,en;q=0.9',
@@ -57,10 +65,13 @@ export const GET: RequestHandler = async ({ url, fetch, request }) => {
     const html = await res.text();
     return new Response(rewriteHtml(html, t), { status: res.status, headers: safe });
   }
+
   if (ct.includes('application/vnd.apple.mpegurl') || t.pathname.endsWith('.m3u8')) {
     const txt = await res.text();
-    const h = strip(res.headers); h.set('content-type','application/vnd.apple.mpegurl');
+    const h = strip(res.headers);
+    h.set('content-type', 'application/vnd.apple.mpegurl');
     return new Response(rewriteM3U8(txt, t), { status: res.status, headers: h });
   }
+
   return new Response(res.body, { status: res.status, headers: safe });
 };
