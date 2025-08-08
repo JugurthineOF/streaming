@@ -89,9 +89,9 @@
     src={embedUrl}
     class="absolute top-0 left-0 w-full h-full"
     frameborder="0"
-    scrolling="no"
-    allowfullscreen={true}
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+    allowfullscreen
+    referrerpolicy="no-referrer"
     loading="lazy"
     on:load={handleIframeLoad}
     on:error={handleIframeError}
