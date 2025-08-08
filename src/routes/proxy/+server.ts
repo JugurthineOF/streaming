@@ -1,77 +1,148 @@
-import type { RequestHandler } from './$types';
+import { browser } from "$app/environment";
+import { get } from "svelte/store";
+import { providerUrls } from "$lib/stores/provider-urls";
 
-const UA =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
-
-function strip(hdrs: Headers) {
-  const h = new Headers(hdrs);
-  h.delete('x-frame-options');
-  h.delete('content-security-policy');
-  h.delete('content-security-policy-report-only');
-  h.set('access-control-allow-origin', '*');
-  h.set('access-control-allow-headers', '*');
-  h.set('access-control-expose-headers', '*');
-  return h;
+export interface Provider {
+  id: string;
+  name: string;
+  getEmbedUrl: (
+    mediaId: string | number,
+    type: "movie" | "tv" | "anime",
+    season?: number,
+    episode?: number
+  ) => string;
 }
 
 const prox = (u: string) => `/proxy?u=${encodeURIComponent(u)}`;
 
-function rewriteHtml(html: string, base: URL) {
-  // remove CSP meta tags that block iframe embedding
-  html = html.replace(/<meta[^>]+http-equiv=["']content-security-policy["'][^>]*>/gi, '');
+export const providers: Provider[] = [
+  {
+    id: "vidsrc",
+    name: "VidSrc",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.vidsrc}/movie/${mediaId}?autoPlay=true`);
+      if (season && episode) return prox(`${urls.vidsrc}/tv/${mediaId}/${season}/${episode}?autoPlay=true&autoNext=true`);
+      return prox(`${urls.vidsrc}/tv/${mediaId}?autoPlay=true`);
+    }
+  },
+  {
+    id: "vidsrcpro",
+    name: "VidSrc Pro",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.vidsrcpro}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.vidsrcpro}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.vidsrcpro}/tv/${mediaId}`);
+    }
+  },
+  {
+    id: "embedsu",
+    name: "Embed.su",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.embedsu}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.embedsu}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.embedsu}/tv/${mediaId}`);
+    }
+  },
+  {
+    id: "smashystream",
+    name: "SmashyStream",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.smashystream}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.smashystream}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.smashystream}/tv/${mediaId}`);
+    }
+  },
+  {
+    id: "movieapi",
+    name: "MovieAPI",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.movieapi}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.movieapi}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.movieapi}/tv/${mediaId}`);
+    }
+  },
+  {
+    id: "upcloud",
+    name: "UpCloud",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.upcloud}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.upcloud}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.upcloud}/tv/${mediaId}`);
+    }
+  },
+  {
+    id: "multiembed",
+    name: "MultiEmbed",
+    getEmbedUrl: (mediaId, type, season, episode) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      if (type === "movie") return prox(`${urls.multiembed}/movie/${mediaId}`);
+      if (season && episode) return prox(`${urls.multiembed}/tv/${mediaId}/${season}/${episode}`);
+      return prox(`${urls.multiembed}/tv/${mediaId}`);
+    }
+  },
 
-  // rewrite src/href double quotes
-  html = html.replace(/(src|href)\s*=\s*"(.*?)"/gi, (_m, a, v) => {
-    try { return `${a}="${prox(new URL(v, base).toString())}"`; } catch { return `${a}="${v}"`; }
-  });
-  // rewrite src/href single quotes
-  html = html.replace(/(src|href)\s*=\s*'(.*?)'/gi, (_m, a, v) => {
-    try { return `${a}='${prox(new URL(v, base).toString())}'`; } catch { return `${a}='${v}'`; }
-  });
-  // rewrite url(...) in inline styles
-  html = html.replace(/url\((?!data:)(['"]?)(.*?)\1\)/gi, (_m, _q, v) => {
-    try { return `url(${prox(new URL(v, base).toString())})`; } catch { return `url(${v})`; }
-  });
-  return html;
+  // Anime providers
+  {
+    id: "gogoanime",
+    name: "Gogoanime",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return prox(`${urls.gogoanime}/streaming.php?id=${mediaId}`);
+    }
+  },
+  {
+    id: "zoro",
+    name: "Zoro",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return prox(`${urls.zoro}/watch/${mediaId}`);
+    }
+  },
+  {
+    id: "animepahe",
+    name: "Animepahe",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return prox(`${urls.animepahe}/play/${mediaId}`);
+    }
+  },
+  {
+    id: "nineanime",
+    name: "9Anime",
+    getEmbedUrl: (mediaId) => {
+      const urls = get(providerUrls);
+      if (!urls) return "";
+      return prox(`${urls.nineanime}/watch/${mediaId}`);
+    }
+  }
+];
+
+export function getProvider(id: string): Provider | undefined {
+  return providers.find((p) => p.id === id);
 }
 
-function rewriteM3U8(text: string, base: URL) {
-  return text.split('\n').map((line) => {
-    const s = line.trim();
-    if (!s || s.startsWith('#')) return line;
-    try { return prox(new URL(s, base).toString()); } catch { return line; }
-  }).join('\n');
+export function getDefaultProvider(): Provider {
+  if (!browser) return providers[0];
+  const savedProvider = localStorage.getItem("selectedProvider");
+  if (savedProvider) {
+    const provider = providers.find((p) => p.id === savedProvider);
+    if (provider) return provider;
+  }
+  return providers.find((p) => p.id === "vidsrc") || providers[0];
 }
-
-export const GET: RequestHandler = async ({ url, fetch, request }) => {
-  const target = url.searchParams.get('u');
-  if (!target) return new Response('Missing u', { status: 400 });
-
-  const t = new URL(target);
-  const hdrs: Record<string, string> = {
-    'user-agent': UA,
-    'accept': request.headers.get('accept') ?? '*/*',
-    'accept-language': request.headers.get('accept-language') ?? 'en-US,en;q=0.9',
-    'referer': t.origin
-  };
-  const range = request.headers.get('range');
-  if (range) hdrs.range = range;
-
-  const res = await fetch(target, { headers: hdrs, redirect: 'follow' });
-  const ct = res.headers.get('content-type') || '';
-  const safe = strip(res.headers);
-
-  if (ct.includes('text/html')) {
-    const html = await res.text();
-    return new Response(rewriteHtml(html, t), { status: res.status, headers: safe });
-  }
-
-  if (ct.includes('application/vnd.apple.mpegurl') || t.pathname.endsWith('.m3u8')) {
-    const txt = await res.text();
-    const h = strip(res.headers);
-    h.set('content-type', 'application/vnd.apple.mpegurl');
-    return new Response(rewriteM3U8(txt, t), { status: res.status, headers: h });
-  }
-
-  return new Response(res.body, { status: res.status, headers: safe });
-};
